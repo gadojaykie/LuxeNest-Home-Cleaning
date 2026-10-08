@@ -103,11 +103,11 @@ const formSuccess = document.getElementById('formSuccess');
 const validators = {
   fullName: (value) => value.trim().length >= 2 || 'Please enter your full name.',
   contact: (value) => {
-    const phonePattern = /^(\+63|0)9\d{9}$/;
+    const phonePattern = /^(?:0[2-478]\d{8}|\+?61[2-478]\d{8})$/;
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const cleaned = value.trim().replace(/\s+/g, '');
+    const cleaned = value.trim().replace(/[()\s-]/g, '');
     if (phonePattern.test(cleaned) || emailPattern.test(value.trim())) return true;
-    return 'Enter a valid PH phone number or email address.';
+    return 'Enter a valid Australian phone number or email address.';
   },
   service: (value) => value !== '' || 'Please select a service.',
   propertyType: (value) => value !== '' || 'Please select a property type.',
@@ -115,7 +115,7 @@ const validators = {
     if (!value) return 'Please choose a preferred date.';
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const selected = new Date(value);
+    const selected = new Date(`${value}T00:00:00`);
     return selected >= today || 'Please choose a date from today onward.';
   },
   preferredTime: (value) => value !== '' || 'Please select a preferred time.'
@@ -178,4 +178,5 @@ bookingForm.addEventListener('submit', (e) => {
 
 // Prevent selecting a past date in the date picker
 const dateInput = document.getElementById('preferredDate');
-dateInput.min = new Date().toISOString().split('T')[0];
+const today = new Date();
+dateInput.min = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
